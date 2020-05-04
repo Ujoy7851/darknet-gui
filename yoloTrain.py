@@ -8,13 +8,14 @@ form_class_main = uic.loadUiType('yoloTrain.ui')[0]
 form_class_editor = uic.loadUiType('textEditor.ui')[0]
 
 class WindowClass(QMainWindow, form_class_main):
-    path = ''
+    filepath = ''
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.fname1, self.fname2, self.fname3, self.fname4 = None, None, None, None
         self.size = ''
+        self.path = ''  #edit here
         self.toolButton.clicked.connect(lambda: self.ToolButtonClick(1))
         self.toolButton_2.clicked.connect(lambda: self.ToolButtonClick(2))
         self.toolButton_3.clicked.connect(lambda: self.ToolButtonClick(3))
@@ -48,26 +49,26 @@ class WindowClass(QMainWindow, form_class_main):
                 self.showDialog('missing path')
                 return
             else:
-                cmd = f'cd /home/fourind/darknet; ./darknet detector train {self.fname1} {self.fname2} {self.fname3}'
+                cmd = f'cd {self.path}; ./darknet detector train {self.fname1} {self.fname2} {self.fname3}'
         elif sel == 2:
             if None in (self.fname1, self.fname2, self.fname3):
                 self.showDialog('missing path')
                 return
             else:
-                cmd = f'cd /home/fourind/darknet; ./darknet detector train {self.fname1} {self.fname2} {self.fname3} -map'
+                cmd = f'cd {self.path}; ./darknet detector train {self.fname1} {self.fname2} {self.fname3} -map'
         elif sel == 3:
             if None in (self.fname1, self.fname2, self.fname3, self.fname4):
                 self.showDialog('missing path')
                 return
             else:
-                cmd = f'cd /home/fourind/darknet; ./darknet detector demo {self.fname1} {self.fname2} {self.fname3} -ext_output {self.fname4}'
+                cmd = f'cd {self.path}; ./darknet detector demo {self.fname1} {self.fname2} {self.fname3} -ext_output {self.fname4}'
         elif sel == 4:
             if self.fname1 is None:
                 self.showDialog('missing path')
             elif self.size == '':
                 self.showDialog('size')
             else:
-                cmd = f'cd /home/fourind/darknet; echo | ./darknet detector calc_anchors {self.fname1} -num_of_clusters 9 -width {self.size} -height {self.size}'
+                cmd = f'cd {self.path}; echo | ./darknet detector calc_anchors {self.fname1} -num_of_clusters 9 -width {self.size} -height {self.size}'
             return
         
         try:
@@ -80,11 +81,11 @@ class WindowClass(QMainWindow, form_class_main):
 
     def editButtonClick(self, sel):
         if sel == 1:
-            WindowClass.path = self.textBrowser.toPlainText()
+            WindowClass.filepath = self.textBrowser.toPlainText()
         else:
-            WindowClass.path = self.textBrowser_2.toPlainText()
+            WindowClass.filepath = self.textBrowser_2.toPlainText()
         
-        if WindowClass.path != '':
+        if WindowClass.filepath != '':
             self.editor = TextEditor()
             self.editor.show()
 
@@ -117,13 +118,13 @@ class TextEditor(QMainWindow, form_class_editor):
         self.pushButton.clicked.connect(self.pushButtonClick)
 
     def file_open(self):
-        file = open(WindowClass.path, 'r')
+        file = open(WindowClass.filepath, 'r')
         text = file.read()
         file.close()
         return text
 
     def pushButtonClick(self):
-        file = open(WindowClass.path, 'w')
+        file = open(WindowClass.filepath, 'w')
         file.write(self.plainTextEdit.toPlainText())
         file.close()
         self.close()
